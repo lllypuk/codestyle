@@ -53,3 +53,24 @@ func TestModuleRoot(t *testing.T) {
 		t.Errorf("без go.mod ошибка %v, ожидалась ErrNoModule", err)
 	}
 }
+
+// TestFileImports — каждый импорт с файлом и пакетом, тесты не считаются.
+func TestFileImports(t *testing.T) {
+	t.Parallel()
+
+	got, err := codestyle.FileImports(fixture)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := []codestyle.FileImport{
+		{File: "cmd/server/main.go", Package: "cmd/server", Path: "example.com/mod/internal/app"},
+		{File: "cmd/server/main.go", Package: "cmd/server", Path: "example.com/mod/internal/store/postgres"},
+		{File: "cmd/server/main.go", Package: "cmd/server", Path: "github.com/lllypuk/other/postgres"},
+		{File: "internal/app/app.go", Package: "internal/app", Path: "example.com/mod/internal/store/postgres"},
+		{File: "internal/app/app.go", Package: "internal/app", Path: "fmt"},
+	}
+	if !slices.Equal(got, want) {
+		t.Errorf("импорты по файлам:\n%v\nожидалось:\n%v", got, want)
+	}
+}

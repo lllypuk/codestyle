@@ -15,12 +15,48 @@ import (
 // ErrNoModule — go.mod не найден ни в каталоге, ни выше по дереву.
 var ErrNoModule = errors.New("go.mod не найден выше по дереву")
 
+// FileImport — один импорт одного файла; пути от корня модуля через `/`.
+type FileImport struct {
+	File    string
+	Package string
+	Path    string
+}
+
 // Imports — импорты каждого пакета модуля по пути от корня; тесты не считаются,
 // им подмена адаптером и нужна. Пакет без импортов присутствует с nil. Импорты
 // полные, собственные отрезает [Own]: адаптер из чужого модуля иначе выпал бы молча.
 func Imports(root string) (map[string][]string, error) {
 	found := map[string][]string{}
 
+	err := walkGoFiles(root, func(_, pkg string, imports []string) {
+		found[pkg] = append(found[pkg], imports...)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return found, nil
+}
+
+// FileImports — импорты модуля по файлам, для правил с исключениями «файл → импорт».
+// Обход и пропуски — как у [Imports].
+func FileImports(root string) ([]FileImport, error) {
+	var found []FileImport
+
+	err := walkGoFiles(root, func(file, pkg string, imports []string) {
+		for _, imp := range imports {
+			found = append(found, FileImport{File: file, Package: pkg, Path: imp})
+		}
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return found, nil
+}
+
+// walkGoFiles — общий обход [Imports] и [FileImports].
+func walkGoFiles(root string, visit func(file, pkg string, imports []string)) error {
 	err := filepath.WalkDir(root, func(path string, entry fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -43,24 +79,22 @@ func Imports(root string) (map[string][]string, error) {
 			return parseErr
 		}
 
-		rel, _ := filepath.Rel(root, filepath.Dir(path))
-		rel = filepath.ToSlash(rel)
+		rel, _ := filepath.Rel(root, path)
 
+		var imports []string
 		for _, imp := range file.Imports {
-			found[rel] = append(found[rel], strings.Trim(imp.Path.Value, `"`))
+			imports = append(imports, strings.Trim(imp.Path.Value, `"`))
 		}
 
-		if _, seen := found[rel]; !seen {
-			found[rel] = nil
-		}
+		visit(filepath.ToSlash(rel), filepath.ToSlash(filepath.Dir(rel)), imports)
 
 		return nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("обход %s: %w", root, err)
+		return fmt.Errorf("обход %s: %w", root, err)
 	}
 
-	return found, nil
+	return nil
 }
 
 // Own оставляет импорты внутри модуля и отрезает его префикс: `module/internal/x` → `internal/x`.
