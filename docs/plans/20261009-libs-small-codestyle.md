@@ -67,6 +67,6 @@
 
 **Files:** `README.md`, `CHANGELOG.md`
 
-- [ ] README, раздел «Импорты между пакетами»: `FileImports` — когда исключения правила пишутся по файлам
-- [ ] `CHANGELOG.md` по Решению 2
-- [ ] коммит `docs: v0.2.0 — FileImports в README и CHANGELOG`
+- [x] README, раздел «Импорты между пакетами»: `FileImports` — когда исключения правила пишутся по файлам
+- [x] `CHANGELOG.md` по Решению 2
+- [x] коммит `docs: v0.2.0 — FileImports в README и CHANGELOG`

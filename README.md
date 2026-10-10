@@ -46,3 +46,15 @@ for pkg, imports := range packages {
 	}
 }
 ```
+
+Если исключения правила записаны парой «файл → импорт», берите `FileImports(root)`: тот же обход,
+но каждый импорт приходит с файлом и пакетом. Пакет без импортов в нём не виден — для полного
+списка пакетов остаётся `Imports`.
+
+```go
+for _, fi := range imports {
+	if strings.HasPrefix(fi.Path, "my-module/internal/platform/") && !allowed[fi.File+" → "+fi.Path] {
+		t.Errorf("%s импортирует платформу %s", fi.File, fi.Path)
+	}
+}
+```
