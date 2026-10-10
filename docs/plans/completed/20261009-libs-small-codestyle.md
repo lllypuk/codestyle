@@ -52,21 +52,21 @@
 
 **Files:** `imports.go`, `imports_test.go`
 
-- [ ] `FileImport`, `FileImports` по Решению 1; `Imports` и `FileImports` — на общем обходчике
-- [ ] тесты на фикстуре: файл, пакет и путь каждого импорта; `_test.go` не попадает; `TestImports`
+- [x] `FileImport`, `FileImports` по Решению 1; `Imports` и `FileImports` — на общем обходчике
+- [x] тесты на фикстуре: файл, пакет и путь каждого импорта; `_test.go` не попадает; `TestImports`
   проходит без правки ожиданий
-- [ ] `go test -race ./...` — зелёный
-- [ ] коммит `feat: FileImports — импорты по файлам`
+- [x] `go test -race ./...` — зелёный
+- [x] коммит `feat: FileImports — импорты по файлам`
 
 ### Task 2: Verify acceptance criteria
 
-- [ ] `Ratchet` не менялся (строгое равенство — «Не делаем»)
-- [ ] `go vet`, тесты, линтер — зелёные
+- [x] `Ratchet` не менялся (строгое равенство — «Не делаем»)
+- [x] `go vet`, тесты, линтер — зелёные
 
 ### Task 3: [Final] Документы
 
 **Files:** `README.md`, `CHANGELOG.md`
 
-- [ ] README, раздел «Импорты между пакетами»: `FileImports` — когда исключения правила пишутся по файлам
-- [ ] `CHANGELOG.md` по Решению 2
-- [ ] коммит `docs: v0.2.0 — FileImports в README и CHANGELOG`
+- [x] README, раздел «Импорты между пакетами»: `FileImports` — когда исключения правила пишутся по файлам
+- [x] `CHANGELOG.md` по Решению 2
+- [x] коммит `docs: v0.2.0 — FileImports в README и CHANGELOG`
